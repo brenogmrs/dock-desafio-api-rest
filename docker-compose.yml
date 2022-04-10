@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: builder
+        command: sh -c 'npm run m:run && npm run dev'
+        ports:
+            - '3000:3000'
+        volumes:
+            - .:/usr/app
+        environment:
+            DB_HOST: postgres
+            DB_PORT: 5432
+            DB_USER: postgres
+            DB_PASSWORD: postgres
+            DB_NAME: dock_challenge
+        depends_on:
+            - postgres
+    postgres:
+        image: postgres:13-alpine
+        restart: always
+        environment:
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: dock_challenge
+        volumes:
+            - pgdata:/var/lib/postgresql/data
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        ports:
+            - '5432:5432'
+volumes:
+    pgdata:
