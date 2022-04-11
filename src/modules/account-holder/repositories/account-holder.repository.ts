@@ -2,7 +2,7 @@ import { injectable } from 'tsyringe';
 import { getRepository, Repository } from 'typeorm';
 import { AccountHolderEntity } from '../entities/account-holder.entity';
 import { ICreateAccountHolder } from '../interfaces/account-holder.interface';
-import { IAccountHolderRepository } from './interface/account-holder.repository';
+import { IAccountHolderRepository } from './interfaces/account-holder.repository';
 
 @injectable()
 export class AccountHolderRepository implements IAccountHolderRepository {
@@ -35,12 +35,12 @@ export class AccountHolderRepository implements IAccountHolderRepository {
     }
 
     public async update(
-        customer: AccountHolderEntity,
+        accountHolder: AccountHolderEntity,
     ): Promise<AccountHolderEntity> {
-        return this.ormRepository.save(customer);
+        return this.ormRepository.save(accountHolder);
     }
 
-    public async delete(customer: AccountHolderEntity): Promise<void> {
-        await this.ormRepository.remove(customer);
+    public async delete(accountHolder: AccountHolderEntity): Promise<void> {
+        await this.ormRepository.remove(accountHolder);
     }
 }

@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { HttpError } from '../../../../common/errors/http.error';
 import { AccountHolderEntity } from '../../entities/account-holder.entity';
 import { ICreateAccountHolder } from '../../interfaces/account-holder.interface';
-import { IAccountHolderRepository } from '../../repositories/interface/account-holder.repository';
+import { IAccountHolderRepository } from '../../repositories/interfaces/account-holder.repository';
 
 @injectable()
 export class CreateAccountHolderUseCase {

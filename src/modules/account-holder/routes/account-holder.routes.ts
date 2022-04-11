@@ -11,7 +11,7 @@ accountHolderRoutes.get('/:id', accountHolderController.findById);
 
 accountHolderRoutes.get('/', accountHolderController.findAll);
 
-accountHolderRoutes.put('/:id', accountHolderController.update);
+accountHolderRoutes.patch('/:id', accountHolderController.update);
 
 accountHolderRoutes.delete('/:id', accountHolderController.delete);
 

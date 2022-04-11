@@ -4,19 +4,19 @@ import { v4 as uuid } from 'uuid';
 import { AccountHolderRepository } from '../../repositories/account-holder.repository';
 import { FindAccountHolderByIdUseCase } from './find-account-holder-by-id';
 
-describe('Get customer by id use case context', () => {
-    let customerRepository: sinon.SinonStubbedInstance<AccountHolderRepository>;
+describe('Get account holder by id use case context', () => {
+    let accountHolderRepository: sinon.SinonStubbedInstance<AccountHolderRepository>;
     let findAccountHolderByIdUseCase: FindAccountHolderByIdUseCase;
 
     beforeEach(() => {
         sinon.restore();
-        customerRepository = sinon.createStubInstance(AccountHolderRepository);
+        accountHolderRepository = sinon.createStubInstance(AccountHolderRepository);
         findAccountHolderByIdUseCase = new FindAccountHolderByIdUseCase(
-            customerRepository,
+            accountHolderRepository,
         );
     });
 
-    it('should find a customer by id', async () => {
+    it('should find a account holder by id', async () => {
         const data = {
             full_name: 'bilbo baggins',
             gender: 'M',
@@ -25,8 +25,8 @@ describe('Get customer by id use case context', () => {
             id: uuid(),
         };
 
-        const customerRepositorySpy = jest
-            .spyOn(customerRepository, 'findById')
+        const accountHolderRepositorySpy = jest
+            .spyOn(accountHolderRepository, 'findById')
             .mockResolvedValue(<any>data);
 
         const expectedRes = {
@@ -36,13 +36,15 @@ describe('Get customer by id use case context', () => {
         const res = await findAccountHolderByIdUseCase.execute(data.id);
 
         expect(res).toEqual(expectedRes);
-        expect(customerRepositorySpy).toHaveBeenNthCalledWith(1, data.id);
+        expect(accountHolderRepositorySpy).toHaveBeenNthCalledWith(1, data.id);
     });
 
-    it('should not find a customer by id', async () => {
+    it('should not find a account holder by id', async () => {
         expect.hasAssertions();
 
-        jest.spyOn(customerRepository, 'findById').mockResolvedValue(<any>undefined);
+        jest.spyOn(accountHolderRepository, 'findById').mockResolvedValue(
+            <any>undefined,
+        );
 
         try {
             await findAccountHolderByIdUseCase.execute('data.id');

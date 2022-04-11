@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { HttpError } from '../../../../common/errors/http.error';
 import { AccountHolderEntity } from '../../entities/account-holder.entity';
-import { IAccountHolderRepository } from '../../repositories/interface/account-holder.repository';
+import { IAccountHolderRepository } from '../../repositories/interfaces/account-holder.repository';
 
 @injectable()
 export class FindAccountHolderByCpfUseCase {

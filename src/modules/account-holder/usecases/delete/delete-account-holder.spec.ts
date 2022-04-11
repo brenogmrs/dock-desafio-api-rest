@@ -22,7 +22,7 @@ describe('delete account holder use case context', () => {
             getAccountHolderByIdUseCase,
         );
     });
-    it('should delete a customer', async () => {
+    it('should delete a account holder', async () => {
         const id = uuid();
 
         const data = {

@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import { AccountHolderEntity } from '../../entities/account-holder.entity';
-import { IAccountHolderRepository } from '../../repositories/interface/account-holder.repository';
+import { IAccountHolderRepository } from '../../repositories/interfaces/account-holder.repository';
 
 @injectable()
 export class FindAllAccountHoldersUseCase {

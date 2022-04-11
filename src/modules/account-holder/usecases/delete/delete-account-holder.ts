@@ -1,5 +1,5 @@
 import { inject, injectable } from 'tsyringe';
-import { IAccountHolderRepository } from '../../repositories/interface/account-holder.repository';
+import { IAccountHolderRepository } from '../../repositories/interfaces/account-holder.repository';
 import { FindAccountHolderByIdUseCase } from '../find-by-id/find-account-holder-by-id';
 
 @injectable()

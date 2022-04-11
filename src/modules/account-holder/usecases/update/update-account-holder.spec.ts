@@ -30,7 +30,7 @@ describe('update account holder use case context', () => {
         };
 
         const updateBody = {
-            full_name: 'Gimli',
+            full_name: 'GIMLI',
         };
 
         const expectedRes = {

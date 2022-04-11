@@ -24,6 +24,9 @@ export class AccountEntity extends BaseEntity {
     @Column({ default: 'AVAILABLE' })
     status: string;
 
+    @Column({ default: true })
+    active: boolean;
+
     @OneToOne(
         () => AccountHolderEntity,
         accountHolderEntity => accountHolderEntity.account,
