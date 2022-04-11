@@ -1,58 +1,53 @@
 import 'reflect-metadata';
 import sinon from 'sinon';
 import { v4 as uuid } from 'uuid';
-// import { AccountHolderRepository } from '../../repositories/account-holder.repository';
-// import { FindAccountHolderByIdUseCase } from './find-account-holder-by-id';
+import { AccountRepository } from '../../repositories/account.repository';
+import { FindAccountByIdUseCase } from './find-account-by-id';
 
-describe('Get customer by id use case context', () => {
-    // let customerRepository: sinon.SinonStubbedInstance<AccountHolderRepository>;
-    // let findAccountHolderByIdUseCase: FindAccountHolderByIdUseCase;
+describe('Get account  by id use case context', () => {
+    let accountRepository: sinon.SinonStubbedInstance<AccountRepository>;
+    let findAccountByIdUseCase: FindAccountByIdUseCase;
 
-    // beforeEach(() => {
-    //     sinon.restore();
-    //     customerRepository = sinon.createStubInstance(AccountHolderRepository);
-    //     findAccountHolderByIdUseCase = new FindAccountHolderByIdUseCase(
-    //         customerRepository,
-    //     );
-    // });
-
-    it('1 === 1', () => {
-        expect(1).toBe(1);
+    beforeEach(() => {
+        sinon.restore();
+        accountRepository = sinon.createStubInstance(AccountRepository);
+        findAccountByIdUseCase = new FindAccountByIdUseCase(accountRepository);
     });
 
-    // it('should find a customer by id', async () => {
-    //     const data = {
-    //         full_name: 'bilbo baggins',
-    //         gender: 'M',
-    //         city_id: uuid(),
-    //         birth_date: '1996-06-06',
-    //         id: uuid(),
-    //     };
+    it('should find a account  by id', async () => {
+        const data = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: false,
+            status: 'AVAILABLE',
+        };
 
-    //     const customerRepositorySpy = jest
-    //         .spyOn(customerRepository, 'findById')
-    //         .mockResolvedValue(<any>data);
+        const accountRepositorySpy = jest
+            .spyOn(accountRepository, 'findById')
+            .mockResolvedValue(<any>data);
 
-    //     const expectedRes = {
-    //         ...data,
-    //     };
+        const expectedRes = {
+            ...data,
+        };
 
-    //     const res = await findAccountHolderByIdUseCase.execute(data.id);
+        const res = await findAccountByIdUseCase.execute(data.id);
 
-    //     expect(res).toEqual(expectedRes);
-    //     expect(customerRepositorySpy).toHaveBeenNthCalledWith(1, data.id);
-    // });
+        expect(res).toEqual(expectedRes);
+        expect(accountRepositorySpy).toHaveBeenNthCalledWith(1, data.id);
+    });
 
-    // it('should not find a customer by id', async () => {
-    //     expect.hasAssertions();
+    it('should not find a account  by id', async () => {
+        expect.hasAssertions();
 
-    //     jest.spyOn(customerRepository, 'findById').mockResolvedValue(<any>undefined);
+        jest.spyOn(accountRepository, 'findById').mockResolvedValue(<any>undefined);
 
-    //     try {
-    //         await findAccountHolderByIdUseCase.execute('data.id');
-    //     } catch (error: any) {
-    //         expect(error.message).toEqual('[Not found] - Account Holder not found.');
-    //         expect(error.code).toEqual(404);
-    //     }
-    // });
+        try {
+            await findAccountByIdUseCase.execute('data.id');
+        } catch (error: any) {
+            expect(error.message).toEqual('[Not found] - Account not found.');
+            expect(error.code).toEqual(404);
+        }
+    });
 });

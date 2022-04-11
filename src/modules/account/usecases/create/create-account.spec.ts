@@ -1,53 +1,79 @@
 import 'reflect-metadata';
 import sinon from 'sinon';
-// import { AccountHolderRepository } from '../../repositories/account-holder.repository';
-// import { CreateAccountHolderUseCase } from './create-account-holder';
+import { v4 as uuid } from 'uuid';
+import { AccountHolderRepository } from '../../../account-holder/repositories/account-holder.repository';
+import { FindAccountHolderByCpfUseCase } from '../../../account-holder/usecases/find-by-cpf/find-account-holder-by-cpf';
+import { AccountStatus } from '../../interfaces/account.interface';
+import { AccountRepository } from '../../repositories/account.repository';
+import { CreateAccountUseCase } from './create-account';
 
-describe('Create account holder use case context', () => {
-    // let accountHolderRepository: sinon.SinonStubbedInstance<AccountHolderRepository>;
+describe('Create account use case context', () => {
+    let accountRepository: sinon.SinonStubbedInstance<AccountRepository>;
+    let accountHolderRepository: sinon.SinonStubbedInstance<AccountHolderRepository>;
 
-    // let createAccountHolderUseCase: CreateAccountHolderUseCase;
+    let createAccountUseCase: CreateAccountUseCase;
+    let findAccountHolderByCpfUseCase: FindAccountHolderByCpfUseCase;
 
-    // beforeEach(() => {
-    //     accountHolderRepository = sinon.createStubInstance(AccountHolderRepository);
+    beforeEach(() => {
+        accountRepository = sinon.createStubInstance(AccountRepository);
+        accountHolderRepository = sinon.createStubInstance(AccountHolderRepository);
 
-    //     createAccountHolderUseCase = new CreateAccountHolderUseCase(
-    //         accountHolderRepository,
-    //     );
-    // });
+        findAccountHolderByCpfUseCase = new FindAccountHolderByCpfUseCase(
+            accountHolderRepository,
+        );
 
-    // afterEach(() => {
-    //     jest.clearAllMocks();
-    // });
+        createAccountUseCase = new CreateAccountUseCase(
+            accountRepository,
+            findAccountHolderByCpfUseCase,
+        );
+    });
 
-    // it('instances should be defined', async () => {
-    //     expect(accountHolderRepository).toBeDefined();
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-    //     expect(createAccountHolderUseCase).toBeDefined();
-    // });
+    it('instances should be defined', async () => {
+        expect(accountRepository).toBeDefined();
 
-    // it('should create a account holder', async () => {
-    //     const data = {
-    //         full_name: 'bilbo baggins',
-    //         cpf: '12312312345',
-    //     };
+        expect(createAccountUseCase).toBeDefined();
+    });
 
-    //     const expectedRes = {
-    //         ...data,
-    //         full_name: data.full_name.toUpperCase(),
-    //     };
+    it('should create a account', async () => {
+        const data = {
+            agency: '123456-7',
+            number: 1234,
+            accountHolderCpf: '12312312345',
+        };
 
-    //     const accountHolderRepositorySpy = jest
-    //         .spyOn(accountHolderRepository, 'createAndSave')
-    //         .mockResolvedValue(<any>expectedRes);
+        const accountHolderData = {
+            id: uuid(),
+            cpf: data.accountHolderCpf,
+        };
 
-    //     const res = await createAccountHolderUseCase.execute(data);
+        const expectedRes = {
+            ...data,
+            status: AccountStatus.AVAILABLE,
+            active: true,
+        };
 
-    //     expect(res).toEqual(expectedRes);
-    //     expect(accountHolderRepositorySpy).toHaveBeenNthCalledWith(1, expectedRes);
-    // });
+        const accountRepositorySpy = jest
+            .spyOn(accountRepository, 'createAndSave')
+            .mockResolvedValue(<any>expectedRes);
 
-    it('1 === 1', () => {
-        expect(1).toBe(1);
+        const findAccountHolderByCpfUseCaseSpy = jest
+            .spyOn(findAccountHolderByCpfUseCase, 'execute')
+            .mockResolvedValue(<any>accountHolderData);
+
+        const res = await createAccountUseCase.execute(data);
+
+        expect(res).toEqual(expectedRes);
+        expect(accountRepositorySpy).toHaveBeenNthCalledWith(1, {
+            ...expectedRes,
+            account_holder_id: accountHolderData.id,
+        });
+        expect(findAccountHolderByCpfUseCaseSpy).toHaveBeenNthCalledWith(
+            1,
+            accountHolderData.cpf,
+        );
     });
 });

@@ -1,53 +1,113 @@
 import 'reflect-metadata';
 import sinon from 'sinon';
-// import { AccountHolderRepository } from '../../repositories/account-holder.repository';
-// import { CreateAccountHolderUseCase } from './create-account-holder';
+import { v4 as uuid } from 'uuid';
+import { AccountRepository } from '../../repositories/account.repository';
+import { FindAccountByIdUseCase } from '../find-by-id/find-account-by-id';
+import { DepositAmountUseCase } from './deposit-amount';
 
-describe('Create account holder use case context', () => {
-    // let accountHolderRepository: sinon.SinonStubbedInstance<AccountHolderRepository>;
+describe('Deposit amount use case context', () => {
+    let accountRepository: sinon.SinonStubbedInstance<AccountRepository>;
 
-    // let createAccountHolderUseCase: CreateAccountHolderUseCase;
+    let depositAmountUseCase: DepositAmountUseCase;
+    let findAcountByIdUseCase: FindAccountByIdUseCase;
 
-    // beforeEach(() => {
-    //     accountHolderRepository = sinon.createStubInstance(AccountHolderRepository);
+    beforeEach(() => {
+        accountRepository = sinon.createStubInstance(AccountRepository);
 
-    //     createAccountHolderUseCase = new CreateAccountHolderUseCase(
-    //         accountHolderRepository,
-    //     );
-    // });
+        findAcountByIdUseCase = new FindAccountByIdUseCase(accountRepository);
 
-    // afterEach(() => {
-    //     jest.clearAllMocks();
-    // });
-
-    // it('instances should be defined', async () => {
-    //     expect(accountHolderRepository).toBeDefined();
-
-    //     expect(createAccountHolderUseCase).toBeDefined();
-    // });
-
-    it('1 === 1', () => {
-        expect(1).toBe(1);
+        depositAmountUseCase = new DepositAmountUseCase(
+            accountRepository,
+            findAcountByIdUseCase,
+        );
     });
 
-    // it('should create a account holder', async () => {
-    //     const data = {
-    //         full_name: 'bilbo baggins',
-    //         cpf: '12312312345',
-    //     };
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-    //     const expectedRes = {
-    //         ...data,
-    //         full_name: data.full_name.toUpperCase(),
-    //     };
+    it('instances should be defined', async () => {
+        expect(accountRepository).toBeDefined();
+        expect(depositAmountUseCase).toBeDefined();
+        expect(findAcountByIdUseCase).toBeDefined();
+    });
 
-    //     const accountHolderRepositorySpy = jest
-    //         .spyOn(accountHolderRepository, 'createAndSave')
-    //         .mockResolvedValue(<any>expectedRes);
+    it('should not deposit amount in inactive account', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: false,
+            status: 'AVAILABLE',
+        };
+        const amount = 100.0;
 
-    //     const res = await createAccountHolderUseCase.execute(data);
+        jest.spyOn(findAcountByIdUseCase, 'execute').mockResolvedValue(
+            <any>accountData,
+        );
 
-    //     expect(res).toEqual(expectedRes);
-    //     expect(accountHolderRepositorySpy).toHaveBeenNthCalledWith(1, expectedRes);
-    // });
+        try {
+            await depositAmountUseCase.execute(accountData.id, amount);
+        } catch (error: any) {
+            expect(error.message).toEqual(
+                '[Conflict] - This account is not active.',
+            );
+            expect(error.code).toEqual(409);
+        }
+    });
+
+    it('should not deposit amount in blocked account', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: true,
+            status: 'BLOCKED',
+        };
+        const amount = 100.0;
+
+        jest.spyOn(findAcountByIdUseCase, 'execute').mockResolvedValue(
+            <any>accountData,
+        );
+
+        try {
+            await depositAmountUseCase.execute(accountData.id, amount);
+        } catch (error: any) {
+            expect(error.message).toEqual('[Conflict] - This account is blocked.');
+            expect(error.code).toEqual(409);
+        }
+    });
+
+    it('should not deposit amount in blocked account', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: true,
+            status: 'AVAILABLE',
+        };
+        const amount = 100.0;
+
+        const expectedRes = {
+            ...accountData,
+            balance: accountData.balance + amount,
+        };
+
+        const findAcountByIdUseCaseSpy = jest
+            .spyOn(findAcountByIdUseCase, 'execute')
+            .mockResolvedValue(<any>accountData);
+
+        const repositorySpy = jest
+            .spyOn(accountRepository, 'update')
+            .mockResolvedValue(<any>expectedRes);
+
+        const response = await depositAmountUseCase.execute(accountData.id, amount);
+
+        expect(response).toEqual(expectedRes);
+        expect(findAcountByIdUseCaseSpy).toHaveBeenNthCalledWith(1, accountData.id);
+        expect(repositorySpy).toHaveBeenNthCalledWith(1, expectedRes);
+    });
 });

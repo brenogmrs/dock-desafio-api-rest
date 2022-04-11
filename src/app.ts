@@ -30,7 +30,7 @@ class App {
         error: Error | HttpError,
         req: Request,
         res: Response,
-        next: NextFunction,
+        _next: NextFunction,
     ) {
         const { code, message, errors } = <any>error;
 

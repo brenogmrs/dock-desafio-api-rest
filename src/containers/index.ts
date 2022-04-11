@@ -9,6 +9,11 @@ import { FindAccountHolderByIdUseCase } from '../modules/account-holder/usecases
 import { UpdateAccountHolderUseCase } from '../modules/account-holder/usecases/update/update-account-holder';
 import { AccountRepository } from '../modules/account/repositories/account.repository';
 import { IAccountRepository } from '../modules/account/repositories/interfaces/account.repository.interface';
+import { CreateAccountUseCase } from '../modules/account/usecases/create/create-account';
+import { DepositAmountUseCase } from '../modules/account/usecases/deposit/deposit-amount';
+import { FindAccountByIdUseCase } from '../modules/account/usecases/find-by-id/find-account-by-id';
+import { UpdateAccountUseCase } from '../modules/account/usecases/update/update-account';
+import { WithdrawAmountUseCase } from '../modules/account/usecases/withdraw/withdraw-amount';
 
 container.registerSingleton<IAccountHolderRepository>(
     'AccountHolderRepository',
@@ -48,4 +53,29 @@ container.registerSingleton<UpdateAccountHolderUseCase>(
 container.registerSingleton<DeleteAccountHolderUseCase>(
     'DeleteAccountHolderUseCase',
     DeleteAccountHolderUseCase,
+);
+
+container.registerSingleton<CreateAccountUseCase>(
+    'CreateAccountUseCase',
+    CreateAccountUseCase,
+);
+
+container.registerSingleton<DepositAmountUseCase>(
+    'DepositAmountUseCase',
+    DepositAmountUseCase,
+);
+
+container.registerSingleton<FindAccountByIdUseCase>(
+    'FindAccountByIdUseCase',
+    FindAccountByIdUseCase,
+);
+
+container.registerSingleton<UpdateAccountUseCase>(
+    'UpdateAccountUseCase',
+    UpdateAccountUseCase,
+);
+
+container.registerSingleton<WithdrawAmountUseCase>(
+    'WithdrawAmountUseCase',
+    WithdrawAmountUseCase,
 );

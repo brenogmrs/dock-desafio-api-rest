@@ -1,52 +1,138 @@
 import 'reflect-metadata';
 import sinon from 'sinon';
-// import { AccountHolderRepository } from '../../repositories/account-holder.repository';
-// import { CreateAccountHolderUseCase } from './create-account-holder';
+import { v4 as uuid } from 'uuid';
+import { AccountRepository } from '../../repositories/account.repository';
+import { FindAccountByIdUseCase } from '../find-by-id/find-account-by-id';
+import { WithdrawAmountUseCase } from './withdraw-amount';
 
-describe('Create account holder use case context', () => {
-    it('1 === 1', () => {
-        expect(1).toBe(1);
+describe('Withdraw amount use case context', () => {
+    let accountRepository: sinon.SinonStubbedInstance<AccountRepository>;
+
+    let withdrawAmountUseCase: WithdrawAmountUseCase;
+    let findAcountByIdUseCase: FindAccountByIdUseCase;
+
+    beforeEach(() => {
+        accountRepository = sinon.createStubInstance(AccountRepository);
+
+        findAcountByIdUseCase = new FindAccountByIdUseCase(accountRepository);
+
+        withdrawAmountUseCase = new WithdrawAmountUseCase(
+            accountRepository,
+            findAcountByIdUseCase,
+        );
     });
-    // let accountHolderRepository: sinon.SinonStubbedInstance<AccountHolderRepository>;
 
-    // let createAccountHolderUseCase: CreateAccountHolderUseCase;
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
 
-    // beforeEach(() => {
-    //     accountHolderRepository = sinon.createStubInstance(AccountHolderRepository);
+    it('instances should be defined', async () => {
+        expect(accountRepository).toBeDefined();
+        expect(withdrawAmountUseCase).toBeDefined();
+        expect(findAcountByIdUseCase).toBeDefined();
+    });
 
-    //     createAccountHolderUseCase = new CreateAccountHolderUseCase(
-    //         accountHolderRepository,
-    //     );
-    // });
+    it('should not withdraw amount in inactive account', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: false,
+            status: 'AVAILABLE',
+        };
+        const amount = 100.0;
 
-    // afterEach(() => {
-    //     jest.clearAllMocks();
-    // });
+        jest.spyOn(findAcountByIdUseCase, 'execute').mockResolvedValue(
+            <any>accountData,
+        );
 
-    // it('instances should be defined', async () => {
-    //     expect(accountHolderRepository).toBeDefined();
+        try {
+            await withdrawAmountUseCase.execute(accountData.id, amount);
+        } catch (error: any) {
+            expect(error.message).toEqual(
+                '[Conflict] - This account is not active.',
+            );
+            expect(error.code).toEqual(409);
+        }
+    });
 
-    //     expect(createAccountHolderUseCase).toBeDefined();
-    // });
+    it('should not withdraw amount in blocked account', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: true,
+            status: 'BLOCKED',
+        };
+        const amount = 100.0;
 
-    // it('should create a account holder', async () => {
-    //     const data = {
-    //         full_name: 'bilbo baggins',
-    //         cpf: '12312312345',
-    //     };
+        jest.spyOn(findAcountByIdUseCase, 'execute').mockResolvedValue(
+            <any>accountData,
+        );
 
-    //     const expectedRes = {
-    //         ...data,
-    //         full_name: data.full_name.toUpperCase(),
-    //     };
+        try {
+            await withdrawAmountUseCase.execute(accountData.id, amount);
+        } catch (error: any) {
+            expect(error.message).toEqual('[Conflict] - This account is blocked.');
+            expect(error.code).toEqual(409);
+        }
+    });
 
-    //     const accountHolderRepositorySpy = jest
-    //         .spyOn(accountHolderRepository, 'createAndSave')
-    //         .mockResolvedValue(<any>expectedRes);
+    it('should not withdraw amount when balance is smaller than amount', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 100.0,
+            active: true,
+            status: 'AVAILABLE',
+        };
+        const amount = 200.0;
 
-    //     const res = await createAccountHolderUseCase.execute(data);
+        jest.spyOn(findAcountByIdUseCase, 'execute').mockResolvedValue(
+            <any>accountData,
+        );
 
-    //     expect(res).toEqual(expectedRes);
-    //     expect(accountHolderRepositorySpy).toHaveBeenNthCalledWith(1, expectedRes);
-    // });
+        try {
+            await withdrawAmountUseCase.execute(accountData.id, amount);
+        } catch (error: any) {
+            expect(error.message).toEqual(
+                '[Bad Request] - The amount withdrawed is bigger than the account balance.',
+            );
+            expect(error.code).toEqual(400);
+        }
+    });
+
+    it('should not withdraw amount in blocked account', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: true,
+            status: 'AVAILABLE',
+        };
+        const amount = 100.0;
+
+        const expectedRes = {
+            ...accountData,
+            balance: accountData.balance - amount,
+        };
+
+        const findAcountByIdUseCaseSpy = jest
+            .spyOn(findAcountByIdUseCase, 'execute')
+            .mockResolvedValue(<any>accountData);
+
+        const repositorySpy = jest
+            .spyOn(accountRepository, 'update')
+            .mockResolvedValue(<any>expectedRes);
+
+        const response = await withdrawAmountUseCase.execute(accountData.id, amount);
+
+        expect(response).toEqual(expectedRes);
+        expect(findAcountByIdUseCaseSpy).toHaveBeenNthCalledWith(1, accountData.id);
+        expect(repositorySpy).toHaveBeenNthCalledWith(1, expectedRes);
+    });
 });

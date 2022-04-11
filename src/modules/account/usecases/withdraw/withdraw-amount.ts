@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe';
+import { HttpError } from '../../../../common/errors/http.error';
 import { AccountEntity } from '../../entities/account.entity';
 import { AccountStatus } from '../../interfaces/account.interface';
 import { IAccountRepository } from '../../repositories/interfaces/account.repository.interface';
@@ -22,18 +23,33 @@ export class WithdrawAmountUseCase {
             Saque é permitido para todas as contas ativas e desbloqueadas desde que haja saldo disponível e 
             não ultrapasse o limite diário de 2 mil reais
 
-            const dailyLimit = pegar todas as transações diárias
+            const dailyLimit = pegar todas as transações para aquele dia
         */
 
-        if (
-            foundAccount.active &&
-            foundAccount.status === AccountStatus.AVAILABLE &&
-            foundAccount.balance > 0 &&
-            amount <= foundAccount.balance
-        ) {
-            foundAccount.balance -= amount;
+        if (!foundAccount.active) {
+            throw new HttpError('[Conflict] - This account is not active.', 409);
         }
 
+        if (foundAccount.status === AccountStatus.BLOCKED) {
+            throw new HttpError('[Conflict] - This account is blocked.', 409);
+        }
+
+        if (foundAccount.balance <= amount) {
+            throw new HttpError(
+                '[Bad Request] - The amount withdrawed is bigger than the account balance.',
+                400,
+            );
+        }
+
+        foundAccount.balance = this.subtractValueToBalance(
+            foundAccount.balance,
+            amount,
+        );
+
         return this.accountRepository.update(foundAccount);
+    }
+
+    private subtractValueToBalance(balance: number, amount: number): number {
+        return +(balance - amount).toFixed(2);
     }
 }
