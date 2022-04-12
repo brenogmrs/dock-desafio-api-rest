@@ -9,7 +9,7 @@ accountRoutes.post('/', accountController.store);
 
 accountRoutes.get('/:id', accountController.findById);
 
-accountRoutes.get('/statement/:id', accountController.withdraw);
+accountRoutes.get('/statement/:id', accountController.statement);
 
 accountRoutes.patch('/:id', accountController.update);
 

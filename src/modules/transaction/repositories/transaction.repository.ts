@@ -31,16 +31,18 @@ export class TransactionRepository implements ITransactionRepository {
         account_id: string,
         filters: TransactionFilters,
     ): Promise<TransactionEntity[]> {
-        const query = this.ormRepository
-            .createQueryBuilder('t')
-            .where(`t.account_id = '${account_id}'`);
+        const query = this.ormRepository.createQueryBuilder('t');
+
+        if (account_id) {
+            query.where(`t.account_id = '${account_id}'`);
+        }
 
         if (filters.operation_type) {
-            query.where(`t.operation_type = '${filters.operation_type}'`);
+            query.andWhere(`t.operation_type = '${filters.operation_type}'`);
         }
 
         if (filters.startDateFilter && filters.endDateFilter) {
-            query.where(
+            query.andWhere(
                 `t.operation_date BETWEEN '${filters.startDateFilter}' AND '${filters.endDateFilter}'`,
             );
         }

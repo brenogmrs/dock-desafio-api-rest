@@ -38,7 +38,7 @@ export class DepositAmountUseCase {
             amount,
             account_id: foundAccount.id,
             operation_type: OperationTypes.DEPOSIT,
-            operation_date: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            operation_date: format(new Date(), 'yyyy-MM-dd'),
         });
 
         return this.accountRepository.update(foundAccount);

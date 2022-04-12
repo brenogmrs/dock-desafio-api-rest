@@ -1,3 +1,5 @@
+import { TransactionEntity } from '../../transaction/entities/transaction.entity';
+
 // eslint-disable-next-line no-shadow
 export enum AccountStatus {
     AVAILABLE = 'AVAILABLE',
@@ -15,4 +17,13 @@ export interface ICreateAccount
 export interface IUpdateAccount {
     status?: AccountStatus;
     active?: boolean;
+}
+
+export interface IAccountStatement {
+    agency: number;
+    number: number;
+    account_holder_name: string;
+    total_deposit: number;
+    total_withdraw: number;
+    transactions: TransactionEntity[];
 }

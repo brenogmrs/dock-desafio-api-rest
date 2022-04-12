@@ -31,6 +31,7 @@ export class AccountEntity extends BaseEntity {
     @OneToOne(
         () => AccountHolderEntity,
         accountHolderEntity => accountHolderEntity.account,
+        { eager: true },
     )
     @JoinColumn({ name: 'account_holder_id' })
     account_holder: AccountHolderEntity;

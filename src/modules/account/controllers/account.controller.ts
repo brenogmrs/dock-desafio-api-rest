@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { container } from 'tsyringe';
 import { idParamSchema } from '../../../common/validators';
+import { AccountStatementUseCase } from '../usecases/account-statement/account-statement';
 import { CreateAccountUseCase } from '../usecases/create/create-account';
 import { DepositAmountUseCase } from '../usecases/deposit/deposit-amount';
 import { FindAccountByIdUseCase } from '../usecases/find-by-id/find-account-by-id';
@@ -121,9 +122,12 @@ export class AccountController {
         const { id } = request.params;
         const dateFilters = query;
 
-        const withdrawAmountUseCase = container.resolve(WithdrawAmountUseCase);
+        const accountStatementUseCase = container.resolve(AccountStatementUseCase);
 
-        const updatedAccount = await withdrawAmountUseCase.execute(id, dateFilters);
+        const updatedAccount = await accountStatementUseCase.execute(
+            id,
+            dateFilters,
+        );
 
         return response.status(200).json(updatedAccount);
     }

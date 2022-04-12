@@ -28,10 +28,10 @@ export const getAccountStatementSchema = yup.object().shape({
         .string()
         .strict(true)
         .matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
-        .required('The property startDateFilter is required'),
+        .optional(),
     endDateFilter: yup
         .string()
         .strict(true)
         .matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
-        .required('The property endDateFilter is required'),
+        .optional(),
 });

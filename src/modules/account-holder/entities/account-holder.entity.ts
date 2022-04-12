@@ -12,7 +12,6 @@ export class AccountHolderEntity extends BaseEntity {
 
     @OneToOne(() => AccountEntity, acc => acc.account_holder, {
         cascade: true,
-        eager: true,
     })
     account: AccountEntity;
 }
