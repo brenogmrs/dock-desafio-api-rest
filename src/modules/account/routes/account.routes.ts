@@ -9,6 +9,8 @@ accountRoutes.post('/', accountController.store);
 
 accountRoutes.get('/:id', accountController.findById);
 
+accountRoutes.get('/statement/:id', accountController.withdraw);
+
 accountRoutes.patch('/:id', accountController.update);
 
 accountRoutes.post('/deposit/:id', accountController.deposit);

@@ -22,3 +22,16 @@ export const depositOrWithdrawAmountSchema = yup.object().shape({
         .strict(true)
         .required('The property amount is required'),
 });
+
+export const getAccountStatementSchema = yup.object().shape({
+    startDateFilter: yup
+        .string()
+        .strict(true)
+        .matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
+        .required('The property startDateFilter is required'),
+    endDateFilter: yup
+        .string()
+        .strict(true)
+        .matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)
+        .required('The property endDateFilter is required'),
+});

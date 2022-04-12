@@ -9,6 +9,7 @@ import { FindAccountHolderByIdUseCase } from '../modules/account-holder/usecases
 import { UpdateAccountHolderUseCase } from '../modules/account-holder/usecases/update/update-account-holder';
 import { AccountRepository } from '../modules/account/repositories/account.repository';
 import { IAccountRepository } from '../modules/account/repositories/interfaces/account.repository.interface';
+import { AccountStatementUseCase } from '../modules/account/usecases/account-statement/account-statement';
 import { CreateAccountUseCase } from '../modules/account/usecases/create/create-account';
 import { DepositAmountUseCase } from '../modules/account/usecases/deposit/deposit-amount';
 import { FindAccountByIdUseCase } from '../modules/account/usecases/find-by-id/find-account-by-id';
@@ -72,6 +73,11 @@ container.registerSingleton<CreateAccountUseCase>(
 container.registerSingleton<DepositAmountUseCase>(
     'DepositAmountUseCase',
     DepositAmountUseCase,
+);
+
+container.registerSingleton<AccountStatementUseCase>(
+    'AccountStatementUseCase',
+    AccountStatementUseCase,
 );
 
 container.registerSingleton<FindAccountByIdUseCase>(

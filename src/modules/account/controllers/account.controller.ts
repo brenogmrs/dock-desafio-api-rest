@@ -9,6 +9,7 @@ import { WithdrawAmountUseCase } from '../usecases/withdraw/withdraw-amount';
 import {
     createAccountSchema,
     depositOrWithdrawAmountSchema,
+    getAccountStatementSchema,
     updateAccountSchema,
 } from '../utils/validators';
 
@@ -102,6 +103,27 @@ export class AccountController {
         const withdrawAmountUseCase = container.resolve(WithdrawAmountUseCase);
 
         const updatedAccount = await withdrawAmountUseCase.execute(id, amount);
+
+        return response.status(200).json(updatedAccount);
+    }
+
+    public async statement(request: Request, response: Response): Promise<Response> {
+        const query = (await getAccountStatementSchema.validate(request.query, {
+            abortEarly: false,
+            stripUnknown: true,
+        })) as any;
+
+        await idParamSchema.validate(request.params, {
+            abortEarly: false,
+            stripUnknown: true,
+        });
+
+        const { id } = request.params;
+        const dateFilters = query;
+
+        const withdrawAmountUseCase = container.resolve(WithdrawAmountUseCase);
+
+        const updatedAccount = await withdrawAmountUseCase.execute(id, dateFilters);
 
         return response.status(200).json(updatedAccount);
     }
