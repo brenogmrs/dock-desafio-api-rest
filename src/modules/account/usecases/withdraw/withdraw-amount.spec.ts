@@ -8,7 +8,7 @@ import { AccountRepository } from '../../repositories/account.repository';
 import { FindAccountByIdUseCase } from '../find-by-id/find-account-by-id';
 import { WithdrawAmountUseCase } from './withdraw-amount';
 
-describe.skip('Withdraw amount use case context', () => {
+describe('Withdraw amount use case context', () => {
     let accountRepository: sinon.SinonStubbedInstance<AccountRepository>;
     let transactionRepository: sinon.SinonStubbedInstance<TransactionRepository>;
 
@@ -124,7 +124,7 @@ describe.skip('Withdraw amount use case context', () => {
         }
     });
 
-    it('should not withdraw amount in blocked account', async () => {
+    it('should withdraw amount in account', async () => {
         const accountData = {
             id: uuid(),
             agency: '123456-7',
@@ -144,6 +144,11 @@ describe.skip('Withdraw amount use case context', () => {
             .spyOn(findAcountByIdUseCase, 'execute')
             .mockResolvedValue(<any>accountData);
 
+        jest.spyOn(
+            withdrawAmountUseCase,
+            'verifyDailyWithdrawLimit',
+        ).mockResolvedValue(<any>1000.0);
+
         const repositorySpy = jest
             .spyOn(accountRepository, 'update')
             .mockResolvedValue(<any>expectedRes);
@@ -153,5 +158,35 @@ describe.skip('Withdraw amount use case context', () => {
         expect(response).toEqual(expectedRes);
         expect(findAcountByIdUseCaseSpy).toHaveBeenNthCalledWith(1, accountData.id);
         expect(repositorySpy).toHaveBeenNthCalledWith(1, expectedRes);
+    });
+
+    it('should not withdraw amount in account when daily limit is exceeded', async () => {
+        const accountData = {
+            id: uuid(),
+            agency: '123456-7',
+            number: 1234,
+            balance: 200.0,
+            active: true,
+            status: 'AVAILABLE',
+        };
+        const amount = 100.0;
+
+        jest.spyOn(findAcountByIdUseCase, 'execute').mockResolvedValue(
+            <any>accountData,
+        );
+
+        jest.spyOn(
+            withdrawAmountUseCase,
+            'verifyDailyWithdrawLimit',
+        ).mockResolvedValue(<any>2100.0);
+
+        try {
+            await withdrawAmountUseCase.execute(accountData.id, amount);
+        } catch (error: any) {
+            expect(error.message).toEqual(
+                '[Bad Request] - You have reached the daily withdraw limit.',
+            );
+            expect(error.code).toEqual(409);
+        }
     });
 });

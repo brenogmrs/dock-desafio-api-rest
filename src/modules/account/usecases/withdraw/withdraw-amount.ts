@@ -72,7 +72,7 @@ export class WithdrawAmountUseCase {
         return this.accountRepository.update(foundAccount);
     }
 
-    private async verifyDailyWithdrawLimit(account_id: string): Promise<number> {
+    public async verifyDailyWithdrawLimit(account_id: string): Promise<number> {
         const currentDate = format(new Date(), 'yyyy-MM-dd');
 
         const filters: TransactionFilters = {
