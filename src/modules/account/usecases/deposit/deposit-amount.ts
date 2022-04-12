@@ -1,5 +1,8 @@
+import { format } from 'date-fns-tz';
 import { inject, injectable } from 'tsyringe';
 import { HttpError } from '../../../../common/errors/http.error';
+import { OperationTypes } from '../../../transaction/interfaces/transaction.interface';
+import { CreateTransactionUseCase } from '../../../transaction/usecases/create/create-transaction';
 import { AccountEntity } from '../../entities/account.entity';
 import { AccountStatus } from '../../interfaces/account.interface';
 import { IAccountRepository } from '../../repositories/interfaces/account.repository.interface';
@@ -13,6 +16,9 @@ export class DepositAmountUseCase {
 
         @inject('FindAccountByIdUseCase')
         private findAccountByIdUseCase: FindAccountByIdUseCase,
+
+        @inject('CreateTransactionUseCase')
+        private createTransactionUseCase: CreateTransactionUseCase,
     ) {}
 
     public async execute(accountId: string, amount: number): Promise<AccountEntity> {
@@ -27,6 +33,13 @@ export class DepositAmountUseCase {
         }
 
         foundAccount.balance = this.addValueToBalance(foundAccount.balance, amount);
+
+        await this.createTransactionUseCase.execute({
+            amount,
+            account_id: foundAccount.id,
+            operation_type: OperationTypes.DEPOSIT,
+            operation_date: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+        });
 
         return this.accountRepository.update(foundAccount);
     }

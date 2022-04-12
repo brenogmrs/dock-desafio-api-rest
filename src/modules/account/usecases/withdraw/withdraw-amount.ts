@@ -1,5 +1,12 @@
+import { format } from 'date-fns-tz';
 import { inject, injectable } from 'tsyringe';
 import { HttpError } from '../../../../common/errors/http.error';
+import {
+    OperationTypes,
+    TransactionFilters,
+} from '../../../transaction/interfaces/transaction.interface';
+import { CreateTransactionUseCase } from '../../../transaction/usecases/create/create-transaction';
+import { FindAllTransactionsUseCase } from '../../../transaction/usecases/find-all/find-all-transactions';
 import { AccountEntity } from '../../entities/account.entity';
 import { AccountStatus } from '../../interfaces/account.interface';
 import { IAccountRepository } from '../../repositories/interfaces/account.repository.interface';
@@ -13,18 +20,16 @@ export class WithdrawAmountUseCase {
 
         @inject('FindAccountByIdUseCase')
         private findAccountByIdUseCase: FindAccountByIdUseCase,
+
+        @inject('CreateTransactionUseCase')
+        private createTransactionUseCase: CreateTransactionUseCase,
+
+        @inject('FindAllTransactionsUseCase')
+        private findAllTransactionsUseCase: FindAllTransactionsUseCase,
     ) {}
 
     public async execute(accountId: string, amount: number): Promise<AccountEntity> {
         const foundAccount = await this.findAccountByIdUseCase.execute(accountId);
-
-        // adicionar validação de transactions aqui
-        /*
-            Saque é permitido para todas as contas ativas e desbloqueadas desde que haja saldo disponível e 
-            não ultrapasse o limite diário de 2 mil reais
-
-            const dailyLimit = pegar todas as transações para aquele dia
-        */
 
         if (!foundAccount.active) {
             throw new HttpError('[Conflict] - This account is not active.', 409);
@@ -41,12 +46,49 @@ export class WithdrawAmountUseCase {
             );
         }
 
+        const withdrawedForTheday = await this.verifyDailyWithdrawLimit(
+            foundAccount.id,
+        );
+
+        if (withdrawedForTheday + amount <= 2000.0) {
+            await this.createTransactionUseCase.execute({
+                amount,
+                account_id: foundAccount.id,
+                operation_type: OperationTypes.WITHDRAW,
+                operation_date: format(new Date(), 'yyyy-MM-dd'),
+            });
+        } else {
+            throw new HttpError(
+                '[Bad Request] - You have reached the daily withdraw limit.',
+                409,
+            );
+        }
+
         foundAccount.balance = this.subtractValueToBalance(
             foundAccount.balance,
             amount,
         );
 
         return this.accountRepository.update(foundAccount);
+    }
+
+    private async verifyDailyWithdrawLimit(account_id: string): Promise<number> {
+        const currentDate = format(new Date(), 'yyyy-MM-dd');
+
+        const filters: TransactionFilters = {
+            operation_type: OperationTypes.WITHDRAW,
+            startDateFilter: currentDate,
+            endDateFilter: currentDate,
+        };
+
+        const transactionsForAccount = await this.findAllTransactionsUseCase.execute(
+            account_id,
+            filters,
+        );
+
+        return transactionsForAccount.reduce((acc, current) => {
+            return acc + current.amount;
+        }, 0);
     }
 
     private subtractValueToBalance(balance: number, amount: number): number {

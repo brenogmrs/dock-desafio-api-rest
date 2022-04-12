@@ -1,24 +1,35 @@
 import 'reflect-metadata';
 import sinon from 'sinon';
 import { v4 as uuid } from 'uuid';
+import { TransactionRepository } from '../../../transaction/repositories/transaction.repository';
+import { CreateTransactionUseCase } from '../../../transaction/usecases/create/create-transaction';
 import { AccountRepository } from '../../repositories/account.repository';
 import { FindAccountByIdUseCase } from '../find-by-id/find-account-by-id';
 import { DepositAmountUseCase } from './deposit-amount';
 
 describe('Deposit amount use case context', () => {
     let accountRepository: sinon.SinonStubbedInstance<AccountRepository>;
+    let transactionRepository: sinon.SinonStubbedInstance<TransactionRepository>;
 
     let depositAmountUseCase: DepositAmountUseCase;
     let findAcountByIdUseCase: FindAccountByIdUseCase;
+    let createTransactionUseCase: CreateTransactionUseCase;
 
     beforeEach(() => {
         accountRepository = sinon.createStubInstance(AccountRepository);
+        transactionRepository = sinon.createStubInstance(TransactionRepository);
+
+        createTransactionUseCase = new CreateTransactionUseCase(
+            transactionRepository,
+            findAcountByIdUseCase,
+        );
 
         findAcountByIdUseCase = new FindAccountByIdUseCase(accountRepository);
 
         depositAmountUseCase = new DepositAmountUseCase(
             accountRepository,
             findAcountByIdUseCase,
+            createTransactionUseCase,
         );
     });
 

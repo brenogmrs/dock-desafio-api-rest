@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/BaseEntity';
 import { AccountHolderEntity } from '../../account-holder/entities/account-holder.entity';
+import { TransactionEntity } from '../../transaction/entities/transaction.entity';
 
 @Entity('account')
 export class AccountEntity extends BaseEntity {
@@ -33,4 +34,7 @@ export class AccountEntity extends BaseEntity {
     )
     @JoinColumn({ name: 'account_holder_id' })
     account_holder: AccountHolderEntity;
+
+    @OneToMany(() => TransactionEntity, transaction => transaction.account)
+    transactions: TransactionEntity[];
 }

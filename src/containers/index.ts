@@ -14,6 +14,10 @@ import { DepositAmountUseCase } from '../modules/account/usecases/deposit/deposi
 import { FindAccountByIdUseCase } from '../modules/account/usecases/find-by-id/find-account-by-id';
 import { UpdateAccountUseCase } from '../modules/account/usecases/update/update-account';
 import { WithdrawAmountUseCase } from '../modules/account/usecases/withdraw/withdraw-amount';
+import { ITransactionRepository } from '../modules/transaction/repositories/interfaces/transaction.repository.interface';
+import { TransactionRepository } from '../modules/transaction/repositories/transaction.repository';
+import { CreateTransactionUseCase } from '../modules/transaction/usecases/create/create-transaction';
+import { FindAllTransactionsUseCase } from '../modules/transaction/usecases/find-all/find-all-transactions';
 
 container.registerSingleton<IAccountHolderRepository>(
     'AccountHolderRepository',
@@ -23,6 +27,11 @@ container.registerSingleton<IAccountHolderRepository>(
 container.registerSingleton<IAccountRepository>(
     'AccountRepository',
     delay(() => AccountRepository),
+);
+
+container.registerSingleton<ITransactionRepository>(
+    'TransactionRepository',
+    delay(() => TransactionRepository),
 );
 
 container.registerSingleton<CreateAccountHolderUseCase>(
@@ -78,4 +87,14 @@ container.registerSingleton<UpdateAccountUseCase>(
 container.registerSingleton<WithdrawAmountUseCase>(
     'WithdrawAmountUseCase',
     WithdrawAmountUseCase,
+);
+
+container.registerSingleton<CreateTransactionUseCase>(
+    'CreateTransactionUseCase',
+    CreateTransactionUseCase,
+);
+
+container.registerSingleton<FindAllTransactionsUseCase>(
+    'FindAllTransactionsUseCase',
+    FindAllTransactionsUseCase,
 );
