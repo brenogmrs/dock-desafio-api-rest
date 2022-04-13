@@ -2,7 +2,7 @@ export default {
     roots: ['<rootDir>/src'],
     collectCoverage: false,
     collectCoverageFrom: [
-        '!<rootDir>/src/modules/**/{routes,controllers,repositories,useCases}/*.ts',
+        '!<rootDir>/modules/**/{routes,controllers,repositories,usecases}/*.ts',
     ],
     coverageDirectory: 'coverage',
     coverageProvider: 'v8',

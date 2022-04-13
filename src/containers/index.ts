@@ -8,14 +8,14 @@ import { FindAccountHolderByCpfUseCase } from '../modules/account-holder/usecase
 import { FindAccountHolderByIdUseCase } from '../modules/account-holder/usecases/find-by-id/find-account-holder-by-id';
 import { UpdateAccountHolderUseCase } from '../modules/account-holder/usecases/update/update-account-holder';
 import { AccountRepository } from '../modules/account/repositories/account.repository';
-import { IAccountRepository } from '../modules/account/repositories/interfaces/account.repository.interface';
+import { IAccountRepository } from '../modules/account/repositories/account.repository.interface';
 import { AccountStatementUseCase } from '../modules/account/usecases/account-statement/account-statement';
 import { CreateAccountUseCase } from '../modules/account/usecases/create/create-account';
 import { DepositAmountUseCase } from '../modules/account/usecases/deposit/deposit-amount';
 import { FindAccountByIdUseCase } from '../modules/account/usecases/find-by-id/find-account-by-id';
 import { UpdateAccountUseCase } from '../modules/account/usecases/update/update-account';
 import { WithdrawAmountUseCase } from '../modules/account/usecases/withdraw/withdraw-amount';
-import { ITransactionRepository } from '../modules/transaction/repositories/interfaces/transaction.repository.interface';
+import { ITransactionRepository } from '../modules/transaction/repositories/transaction.repository.interface';
 import { TransactionRepository } from '../modules/transaction/repositories/transaction.repository';
 import { CreateTransactionUseCase } from '../modules/transaction/usecases/create/create-transaction';
 import { FindAllTransactionsUseCase } from '../modules/transaction/usecases/find-all/find-all-transactions';

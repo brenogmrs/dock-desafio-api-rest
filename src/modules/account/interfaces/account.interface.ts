@@ -7,7 +7,7 @@ export enum AccountStatus {
 }
 export interface ICreateAccountPayload {
     accountHolderCpf: string;
-    number: number;
+    number: string;
     agency: string;
 }
 export interface ICreateAccount

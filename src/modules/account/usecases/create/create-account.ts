@@ -5,7 +5,7 @@ import {
     AccountStatus,
     ICreateAccountPayload,
 } from '../../interfaces/account.interface';
-import { IAccountRepository } from '../../repositories/interfaces/account.repository.interface';
+import { IAccountRepository } from '../../repositories/account.repository.interface';
 
 @injectable()
 export class CreateAccountUseCase {

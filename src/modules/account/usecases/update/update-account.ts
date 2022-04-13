@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { HttpError } from '../../../../common/errors/http.error';
 import { AccountEntity } from '../../entities/account.entity';
 import { AccountStatus, IUpdateAccount } from '../../interfaces/account.interface';
-import { IAccountRepository } from '../../repositories/interfaces/account.repository.interface';
+import { IAccountRepository } from '../../repositories/account.repository.interface';
 import { FindAccountByIdUseCase } from '../find-by-id/find-account-by-id';
 
 @injectable()

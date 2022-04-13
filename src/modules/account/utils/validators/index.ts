@@ -2,7 +2,7 @@ import * as yup from 'yup';
 
 export const createAccountSchema = yup.object().shape({
     agency: yup.string().strict(true).required('The property agency is required'),
-    number: yup.number().strict(true).required('The property number is required'),
+    number: yup.string().strict(true).required('The property number is required'),
     accountHolderCpf: yup
         .string()
         .strict(true)

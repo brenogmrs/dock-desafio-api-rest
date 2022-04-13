@@ -9,7 +9,7 @@ import { CreateTransactionUseCase } from '../../../transaction/usecases/create/c
 import { FindAllTransactionsUseCase } from '../../../transaction/usecases/find-all/find-all-transactions';
 import { AccountEntity } from '../../entities/account.entity';
 import { AccountStatus } from '../../interfaces/account.interface';
-import { IAccountRepository } from '../../repositories/interfaces/account.repository.interface';
+import { IAccountRepository } from '../../repositories/account.repository.interface';
 import { FindAccountByIdUseCase } from '../find-by-id/find-account-by-id';
 
 @injectable()

@@ -9,7 +9,7 @@ export class AccountEntity extends BaseEntity {
     account_holder_id: string;
 
     @Column()
-    number: number;
+    number: string;
 
     @Column()
     agency: string;

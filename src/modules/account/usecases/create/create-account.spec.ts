@@ -40,8 +40,8 @@ describe('Create account use case context', () => {
 
     it('should create a account', async () => {
         const data = {
-            agency: '123456-7',
-            number: 1234,
+            number: '123456-7',
+            agency: '1234',
             accountHolderCpf: '12312312345',
         };
 

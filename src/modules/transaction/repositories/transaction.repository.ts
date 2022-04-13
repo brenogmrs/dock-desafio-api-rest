@@ -5,7 +5,7 @@ import {
     ICreateTransaction,
     TransactionFilters,
 } from '../interfaces/transaction.interface';
-import { ITransactionRepository } from './interfaces/transaction.repository.interface';
+import { ITransactionRepository } from './transaction.repository.interface';
 
 @injectable()
 export class TransactionRepository implements ITransactionRepository {
@@ -21,10 +21,6 @@ export class TransactionRepository implements ITransactionRepository {
         const transaction = this.ormRepository.create(transactionData);
 
         return this.ormRepository.save(transaction);
-    }
-
-    public async findAll(): Promise<TransactionEntity[]> {
-        return this.ormRepository.find();
     }
 
     public async findAllTransactionsForAccount(
@@ -48,11 +44,5 @@ export class TransactionRepository implements ITransactionRepository {
         }
 
         return query.getMany();
-    }
-
-    public async findById(
-        transactionId: string,
-    ): Promise<TransactionEntity | undefined> {
-        return this.ormRepository.findOne({ id: transactionId });
     }
 }

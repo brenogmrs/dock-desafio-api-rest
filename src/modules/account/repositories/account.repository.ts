@@ -2,7 +2,7 @@ import { injectable } from 'tsyringe';
 import { getRepository, Repository } from 'typeorm';
 import { AccountEntity } from '../entities/account.entity';
 import { ICreateAccount } from '../interfaces/account.interface';
-import { IAccountRepository } from './interfaces/account.repository.interface';
+import { IAccountRepository } from './account.repository.interface';
 
 @injectable()
 export class AccountRepository implements IAccountRepository {

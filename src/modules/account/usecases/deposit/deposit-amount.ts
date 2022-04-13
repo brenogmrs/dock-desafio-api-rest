@@ -5,7 +5,7 @@ import { OperationTypes } from '../../../transaction/interfaces/transaction.inte
 import { CreateTransactionUseCase } from '../../../transaction/usecases/create/create-transaction';
 import { AccountEntity } from '../../entities/account.entity';
 import { AccountStatus } from '../../interfaces/account.interface';
-import { IAccountRepository } from '../../repositories/interfaces/account.repository.interface';
+import { IAccountRepository } from '../../repositories/account.repository.interface';
 import { FindAccountByIdUseCase } from '../find-by-id/find-account-by-id';
 
 @injectable()
