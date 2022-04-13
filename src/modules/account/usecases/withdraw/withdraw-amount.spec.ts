@@ -165,11 +165,11 @@ describe('Withdraw amount use case context', () => {
             id: uuid(),
             agency: '123456-7',
             number: 1234,
-            balance: 200.0,
+            balance: 2100.0,
             active: true,
             status: 'AVAILABLE',
         };
-        const amount = 100.0;
+        const amount = 600;
 
         jest.spyOn(findAcountByIdUseCase, 'execute').mockResolvedValue(
             <any>accountData,
@@ -178,13 +178,13 @@ describe('Withdraw amount use case context', () => {
         jest.spyOn(
             withdrawAmountUseCase,
             'verifyDailyWithdrawLimit',
-        ).mockResolvedValue(<any>2100.0);
+        ).mockResolvedValue(<any>1500);
 
         try {
             await withdrawAmountUseCase.execute(accountData.id, amount);
         } catch (error: any) {
             expect(error.message).toEqual(
-                '[Bad Request] - You have reached the daily withdraw limit.',
+                '[Conflict] - This transaciont would exceed your daily limit. At this point you can only withdraw the amount of: 500',
             );
             expect(error.code).toEqual(409);
         }
