@@ -46,6 +46,13 @@ export class WithdrawAmountUseCase {
             );
         }
 
+        if (amount > 2000.0) {
+            throw new HttpError(
+                '[Bad Request] - Your daily withdraw limit is 2000.0.',
+                409,
+            );
+        }
+
         const withdrawedForTheday = await this.verifyDailyWithdrawLimit(
             foundAccount.id,
         );
@@ -59,7 +66,9 @@ export class WithdrawAmountUseCase {
             });
         } else {
             throw new HttpError(
-                '[Bad Request] - You have reached the daily withdraw limit.',
+                `[Conflict] - This transaciont would exceed your daily limit. At this point you can only withdraw the amount of: ${
+                    2000 - withdrawedForTheday
+                }`,
                 409,
             );
         }
