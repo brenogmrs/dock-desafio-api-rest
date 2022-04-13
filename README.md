@@ -60,6 +60,7 @@
 # Account
 ### Estrutura:
 
+- `id`: uuid da conta 
 - `account_holder_id`: id do titular da conta
 - `number`: número da conta 
 - `agency`: agencia da conta
